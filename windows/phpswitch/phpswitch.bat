@@ -94,6 +94,7 @@ echo ---------------------------------------------------------------------------
 echo PHP junction directory...
 echo --------------------------------------------------------------------------------
 rem We're afraid to delete normal PHP dir
+if not exist %PHP_JUNCTION% echo %PHP_JUNCTION% not present... & exit /b 0
 fsutil reparsepoint query %PHP_JUNCTION% >nul
 if %ERRORLEVEL% neq 0 echo Current PHP directory needs to be a junction... & exit /b 1
 echo Deleting current PHP junction at %PHP_JUNCTION%...
