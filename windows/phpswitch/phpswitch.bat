@@ -27,6 +27,7 @@ REM | @todo Add configuration flags to the top of the script (whether to restart
 
 setlocal
 
+set APACHE_HOME=C:\Apache24
 set PHP_JUNCTION=%PHP_HOME%
 set PHP_DRIVE=c:
 
@@ -83,6 +84,7 @@ call :DEL_PHP_JUNCTION
 if %ERRORLEVEL% neq 0 goto :EXIT
 call :CREATE_PHP_JUNCTION
 call :CHECK_PHP_VERSION
+call :SWITCH_APACHE_CONFIG
 call :START_APACHE
 goto :EXIT
 
@@ -119,6 +121,16 @@ echo ---------------------------------------------------------------------------
 php -v
 exit /b 0
 
+:SWITCH_APACHE_CONFIG
+echo --------------------------------------------------------------------------------
+echo Switching Apache config...
+echo --------------------------------------------------------------------------------
+echo Backing up current httpd.conf...
+copy %APACHE_HOME%\conf\httpd.conf %APACHE_HOME%\conf\httpd.conf.bak /v /y
+echo Copying httpd_%PHP_DIR%.conf to httpd.conf
+copy %APACHE_HOME%\conf\httpd_%PHP_DIR%.conf %APACHE_HOME%\conf\httpd.conf /v /y
+exit /b 0
+
 :STOP_APACHE
 echo --------------------------------------------------------------------------------
 echo Stopping Apache...
@@ -130,9 +142,9 @@ exit /b 0
 echo --------------------------------------------------------------------------------
 echo Starting Apache...
 echo --------------------------------------------------------------------------------
-set APACHE_CONF=c:\Apache24\conf\httpd_%PHP_DIR%.conf
-echo Starting Apache HTTP Server using %APACHE_CONF%...
-c:\Apache24\bin\httpd.exe -k start -n "Apache2.4" -f "%APACHE_CONF%"
+set APACHE_CONF=%APACHE_HOME%\conf\httpd_%PHP_DIR%.conf
+echo Starting Apache HTTP Server using content of %APACHE_CONF% in httpd.conf...
+c:\Apache24\bin\httpd.exe -k start -n "Apache2.4"
 exit /b 0
 
 rem ==================================================
